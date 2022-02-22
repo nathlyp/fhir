@@ -72,6 +72,22 @@ inner join D_ICD_PROCEDURES on procedures_icd.icd9_code == D_ICD_PROCEDURES.icd9
         list.append(item)
     return list
 
+def services():
+    list = []
+    rows = __query("SELECT * FROM services")
+
+    for row in rows:
+        item = {
+            'row_id': int(row[0]),
+            'subject_id': int(row[1]),
+            'hadm_id': int(row[2]),
+            'transfertime': map_date(row[3]),
+            'prev_service': row[4],
+            'curr_service': row[5],
+        }
+        list.append(item)
+    return list
+
 def map_date(date):
     """
     Map a string date from into a python date

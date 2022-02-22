@@ -8,6 +8,7 @@ json:
 	python final/patient.py > 01-patient.fhir.json
 	python final/admissions.py > 02-encounter.fhir.json
 	python final/procedures.py > 03-procedure.fhir.json
+	python final/service_request.py > 04-ServiceRequest.fhir.json
 
 hapi:
 	docker-compose up
