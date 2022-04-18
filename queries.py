@@ -1,3 +1,4 @@
+import re
 import sqlite3
 from datetime import datetime
 from contextlib import closing
@@ -84,6 +85,35 @@ def services():
             'transfertime': map_date(row[3]),
             'prev_service': row[4],
             'curr_service': row[5],
+        }
+        list.append(item)
+    return list
+
+def prescriptions():
+    list = []
+    rows = __query("select * from prescriptions")
+
+    for row in rows:
+        item = {
+            'row_id':            int(row[0]),
+            'subject_id':        int(row[1]),
+            'hadm_id':           int(row[2]),
+            'icustay_id':        int(row[3]) if row[3] else None,
+            'startdate':         map_date(row[4]),
+            'enddate':           map_date(row[5]),
+            'drug_type':         row[6],
+            'drug':              row[7],
+            'drug_name_poe':     row[8],
+            'drug_name_generic': row[9],
+            'formulary_drug_cd': row[10] if row[10] else None,
+            'gsn':               row[11] if row[11] and row[11] != '0' else None,
+            'ndc':               row[12] if row[12] and row[12] != '0' else None,
+            'prod_strength':     row[13],
+            'dose_val_rx':       re.sub(r'[^\d\.-]', '', row[14]),
+            'dose_unit_rx':      row[15],
+            'form_val_disp':     re.sub(r'[^\d\.-]', '', row[16]),
+            'form_unit_disp':    row[17],
+            'route':             row[18]
         }
         list.append(item)
     return list
