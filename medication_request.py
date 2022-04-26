@@ -30,9 +30,6 @@ def map_fhir_medication(mimic):
             "reference": f"Encounter?identifier={mimic['hadm_id']}"
         },
         "dispenseRequest": {
-            "validityPeriod": {
-                "start": mimic["startdate"].date().isoformat(),
-            },
             "quantity": map_dispense_quantity(mimic)
         },
         "category": [{
@@ -57,6 +54,11 @@ def map_fhir_medication(mimic):
             "doseAndRate": [map_dose(mimic)]
         }],
     }
+    if mimic["startdate"] or mimic["enddate"]:
+        resource["dispenseRequest"]["validityPeriod"] = {}
+
+    if mimic["startdate"]:
+        resource["dispenseRequest"]["validityPeriod"]["start"] = mimic["startdate"].date().isoformat()
 
     if mimic["enddate"]:
         resource["dispenseRequest"]["validityPeriod"]["end"] = mimic["enddate"].date().isoformat()
