@@ -13,6 +13,22 @@ def __query(sql):
         with closing(connection.cursor()) as cursor:
             return cursor.execute(sql).fetchall()
 
+def sqlite_query_executor(query):
+    conn=sqlite3.connect()
+    cur=conn.cursor()
+
+    while True:
+        yield cur.execute(query).fetchone()[0]
+
+def __query_gen(sql):
+    with closing(sqlite3.connect(path_db)) as connection:
+        with closing(connection.cursor()) as cursor:
+            cursor.execute(sql)
+            meter_row = cursor.fetchone()
+            while meter_row:
+                yield meter_row
+                meter_row = cursor.fetchone()
+
 def patients():
     list = []
     rows = __query("SELECT * FROM patients")
@@ -90,11 +106,10 @@ def services():
     return list
 
 def prescriptions():
-    list = []
-    rows = __query("select * from prescriptions")
+    rows = __query_gen("select * from prescriptions")
 
     for row in rows:
-        item = {
+        yield {
             'row_id':            int(row[0]),
             'subject_id':        int(row[1]),
             'hadm_id':           int(row[2]),
@@ -115,8 +130,6 @@ def prescriptions():
             'form_unit_disp':    row[17],
             'route':             row[18]
         }
-        list.append(item)
-    return list
 
 def map_date(date):
     """

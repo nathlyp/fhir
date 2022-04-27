@@ -2,17 +2,20 @@ from queries import prescriptions
 import json
 
 def main():
-    fhir_bundle_items = []
+    print('{ "resourceType": "Bundle", "type": "batch", "entry": [')
 
+    count = 0
     for prescription in prescriptions():
+        count=count+1
         fhir_medication = map_fhir_medication(prescription)
         fhir_bundle_item = map_fhir_bundle_item(fhir_medication)
-        fhir_bundle_items.append(fhir_bundle_item)
+        
+        if count > 1: print(',')
 
-    fhir_bundle = map_fhir_bundle(fhir_bundle_items)
-    
-    #FROM: https://www.w3schools.com/python/python_json.asp
-    print(json.dumps(fhir_bundle))
+        #FROM: https://www.w3schools.com/python/python_json.asp        
+        print(json.dumps(fhir_bundle_item), end='')
+
+    print('\n] }', end='')
 
 def map_fhir_medication(mimic):
     resource = {
@@ -148,14 +151,6 @@ def map_fhir_bundle_item(fhir_encounter):
             "url": "Encounter"
         },
         "resource": fhir_encounter
-    }
-
-def map_fhir_bundle(bundle_items):
-    """Map the FHIR bundle items into a single bundle"""
-    return {
-        "resourceType": "Bundle",
-        "type": "batch",
-        "entry": bundle_items
     }
 
 main()
